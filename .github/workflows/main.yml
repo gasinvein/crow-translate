@@ -48,11 +48,15 @@ jobs:
     name: Build
     strategy:
       matrix:
-        os: [ubuntu-20.04, windows-2019]
+        os: [ubuntu-20.04, windows-2019, macos-13]
         include:
           - os: ubuntu-20.04
             extra-cmake-arguments: >-
               -D CMAKE_CXX_FLAGS="-Wall -Wextra -pedantic -Werror"
+          - os: macos-13
+            extra-cmake-arguments: >-
+              -D CMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake
+              -D VCPKG_TARGET_TRIPLET=x64-osx
           - os: windows-2019
             extra-cmake-arguments: >-
               -D CMAKE_TOOLCHAIN_FILE=$env:VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake
@@ -74,12 +78,17 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install extra-cmake-modules libqt5x11extras5-dev qttools5-dev qtmultimedia5-dev libkf5wayland-dev libtesseract-dev ninja-build
+      
+      - name: Install homebrew packages
+        if: runner.os == 'macOS'
+        run: |
+          brew install ninja pkg-config
 
       - name: Install vcpkg
-        uses: lukka/run-vcpkg@v10.7
-        if: runner.os == 'Windows'
+        uses: lukka/run-vcpkg@v11
+        if: runner.os != 'Linux'
         with:
-          vcpkgGitCommitId: d8e5ba9b4513ee2088c0cf17834e771300d156bd
+          vcpkgGitCommitId: f6a5d4e8eb7476b8d7fc12a56dff300c1c986131
 
       - name: Setup MSVC
         if: runner.os == 'Windows'
