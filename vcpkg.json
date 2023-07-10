@@ -10,6 +10,10 @@
       "platform": "windows"
     },
     {
+      "name": "qt5-macextras",
+      "platform": "osx"
+    },
+    {
       "name": "qt5-x11extras",
       "platform": "linux"
     },
